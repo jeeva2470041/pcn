@@ -1,0 +1,10 @@
+# Ignore sensitive API keys and secrets
+api.txt
+*api*.txt
+*.key
+.env
+
+# Python / Environments
+.venv/
+__pycache__/
+*.pyc

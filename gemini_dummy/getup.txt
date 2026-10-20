@@ -1,0 +1,61 @@
+#SETUP 
+
+# STEP 1 
+ CREATE THE FOLDER 
+
+#STEP 2
+cd ~/openai-terminal
+source .venv/bin/activate
+python3 -m pip install --upgrade google-genai
+
+#STEP 3
+read -rsp "Paste your Gemini API key: " GEMINI_API_KEY
+echo
+export GEMINI_API_KEY
+
+#STEP 4(TO VERIFY)
+
+python3 -c 'from google import genai; c=genai.Client(); r=c.models.generate_content(model="gemini-2.5-flash", contents="Say hello bro"); print(r.text)'
+
+#STEP 5
+nano gemini_chat.py
+
+#STEP 6
+
+from google import genai
+client = genai.Client()
+chat = client.chats.create(model="gemini-2.5-flash")
+
+print("\n🤖 Gemini Terminal Chat")
+print("Type 'exit' to quit or 'reset' to restart.\n")
+
+while True:
+    try:
+        prompt = input("You: ").strip()
+
+        if not prompt:
+            continue
+
+        if prompt.lower() in ("exit", "quit"):
+            print("Gemini: See you, bro!")
+            break
+
+        if prompt.lower() == "reset":
+            chat = client.chats.create(model="gemini-2.5-flash")
+            print("Gemini: Conversation reset!\n")
+            continue
+
+        response = chat.send_message(prompt)
+        print(f"\nGemini: {response.text}\n")
+
+    except KeyboardInterrupt:
+        print("\nChat ended.")
+        break
+    except Exception as error:
+        print(f"\nError: {error}\n")
+
+#STEP 7
+ctrl+ O then enter then ctrl+ X
+
+#STEP 8
+python3 gemini_chat.py
