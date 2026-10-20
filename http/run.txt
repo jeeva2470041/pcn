@@ -1,0 +1,4 @@
+gcc filename.c -o filename
+./filename
+
+http://localhost:8000/index.html
