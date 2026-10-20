@@ -1,0 +1,53 @@
+=================================================================
+  TCP 4-PACKET TRANSMISSION WITH INTENTIONAL LOSS, RETRANSMISSION & TIMERS
+=================================================================
+
+Description:
+  - Client connects to Server over TCP.
+  - Client runs a Socket Retransmission Timer (RTO = 2000 ms) for each packet.
+  - Client sends 4 packets (Packets 1, 2, 3, 4).
+  - Server intentionally flags Packet #3 as MISSED.
+  - Supports two demonstration modes:
+      Mode 1: Explicit NACK (Server reports "Packet #3 Missed")
+      Mode 2: Silent Drop (Server withholds ACK -> Client Timer EXPIRES after 2000 ms)
+  - Client detects Packet #3 was missed, restarts the Timer, and retransmits it.
+  - Server accepts the retransmitted packet and confirms delivery.
+  - Comprehensive Performance & Timer Metrics:
+      * Retransmission Timer (RTO) tracking (Started, Stopped, Timeouts)
+      * Jacobson's Algorithm (Smoothed RTT - SRTT, Variance - RTTVAR, Dynamic RTO)
+      * Packet Delivery Ratio (PDR)
+      * Retransmission / Loss Rate
+      * Per-packet and Average Round Trip Time (RTT)
+      * Network Throughput vs Application Goodput
+      * Protocol Efficiency
+
+--------------------------------------------------
+HOW TO COMPILE AND RUN (WSL Terminal)
+--------------------------------------------------
+
+1. Open WSL terminal and enter the folder:
+   wsl
+   cd /mnt/c/Users/priya/jeeva_project/pcn/tcp_retransmission
+
+2. Compile both programs:
+   gcc -Wall server.c -o server
+   gcc -Wall client.c -o client
+
+--------------------------------------------------
+EXECUTION OPTIONS:
+--------------------------------------------------
+
+--- OPTION A: Mode 1 (Server explicitly replies "Packet #3 is MISSED") ---
+Terminal 1 (Server):
+   ./server 8888 3 1
+
+Terminal 2 (Client):
+   ./client 127.0.0.1 8888
+
+
+--- OPTION B: Mode 2 (Server withholds ACK -> Client 2-Second Timer Times Out) ---
+Terminal 1 (Server):
+   ./server 8888 3 2
+
+Terminal 2 (Client):
+   ./client 127.0.0.1 8888

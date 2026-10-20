@@ -1,0 +1,39 @@
+==================================================
+  HOW TO COMPILE AND RUN TCP & UDP PACKET + ACK
+==================================================
+
+Prerequisite:
+Open WSL terminal (Ubuntu):
+  wsl
+  cd /mnt/c/Users/priya/jeeva_project/pcn/tcp_udp_ack
+
+--------------------------------------------------
+1. TCP (CONNECTION-ORIENTED)
+--------------------------------------------------
+Compile:
+  gcc tcp_server.c -o tcp_server
+  gcc tcp_client.c -o tcp_client
+
+Run:
+  Terminal 1 (Server):
+    ./tcp_server
+
+  Terminal 2 (Client):
+    ./tcp_client
+    (Then type any text and press Enter to send a packet. Type 'exit' to quit)
+
+
+--------------------------------------------------
+2. UDP (CONNECTIONLESS / DATAGRAM)
+--------------------------------------------------
+Compile:
+  gcc udp_server.c -o udp_server
+  gcc udp_client.c -o udp_client
+
+Run:
+  Terminal 1 (Server):
+    ./udp_server
+
+  Terminal 2 (Client):
+    ./udp_client
+    (Then type any text and press Enter to send a packet. Type 'exit' to quit)
