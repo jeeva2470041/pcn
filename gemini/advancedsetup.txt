@@ -1,7 +1,0 @@
-npm install -g @google/gemini-cli
-gemini --version
-gemini
-
-paste api
-
-select the model

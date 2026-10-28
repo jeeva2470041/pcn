@@ -1,0 +1,139 @@
+=====================================================================
+  MULTITHREADED PRIVATE CHAT & SUPPORT DESK SYSTEM (PCN LAB)
+=====================================================================
+
+DESCRIPTION:
+  - Multithreaded TCP Server and Client using POSIX threads (pthread).
+  - Multiple clients can connect simultaneously to the server.
+  - Server assigns a dedicated worker thread (TID) to each client with full
+    real-time event logging (connections, disconnections, messages, timestamps).
+  - Client implements multithreading:
+      * Receiver Thread: Asynchronously receives incoming messages without blocking.
+      * Sender Thread: Reads user keyboard input and transmits to server.
+  - Role-based handling:
+      1. Customer / Client (Can chat privately with Server or request Support)
+      2. Support Team Agent (Can list pending requests, accept clients, and
+         conduct private 1-on-1 chat sessions isolated from other clients)
+  - Direct private chat capability between Server Operator and any Client.
+  - Mutex locks (pthread_mutex_t) ensure thread-safe client registry & clean logs.
+
+---------------------------------------------------------------------
+1. COMPILATION INSTRUCTIONS (WSL / Linux Terminal)
+---------------------------------------------------------------------
+
+Open WSL terminal and navigate to the directory:
+   wsl
+   cd /mnt/c/Users/priya/jeeva_project/pcn/multithread
+
+Compile Server:
+   gcc -Wall -Wextra server.c -o server_tcp -lpthread
+
+Compile Client:
+   gcc -Wall -Wextra client.c -o client_tcp -lpthread
+
+(Note: You can name the output files `server` / `client` or `server_tcp` / `client_tcp`)
+
+---------------------------------------------------------------------
+2. HOW TO RUN (STEP-BY-STEP WORKFLOW)
+---------------------------------------------------------------------
+
+To observe multithreading and private chat routing in action, open
+multiple terminal windows.
+
+### STEP 1: START THE SERVER (Terminal 1)
+   ./server_tcp 8080
+
+   * The server starts listening on port 8080.
+   * Spawns worker threads for each client connection.
+   * Displays timestamped logs with Thread IDs (TID).
+   * Has an interactive admin console (type /clients, /msg, /broadcast, /help).
+
+
+### STEP 2: CONNECT CLIENT 1 - CUSTOMER (Terminal 2)
+   ./client_tcp 127.0.0.1 8080
+
+   1. Enter Name: Alice
+   2. Choose Role: 1 (Customer / Client)
+   3. Request Support:
+      > /request My internet connection keeps dropping
+   4. Or chat privately directly with Server:
+      > /server Hello server admin, need quick assistance!
+
+
+### STEP 3: CONNECT CLIENT 2 - SUPPORT TEAM AGENT (Terminal 3)
+   ./client 127.0.0.1 8080
+
+   1. Enter Name: Bob_Support
+   2. Choose Role: 2 (Support Team Agent)
+   3. View pending client support requests:
+      > /list
+   4. Accept Client 1 (Alice) for a private 1-on-1 chat:
+      > /accept 1
+   5. Chat privately:
+      > Hello Alice! I am Bob from support. Let's fix your network.
+   
+   * Alice (Terminal 2) will immediately see:
+     [Support Agent Bob_Support]: Hello Alice! I am Bob from support. Let's fix your network.
+   * Alice replies directly:
+     > Thanks Bob! The router LED is blinking red.
+   * Bob receives Alice's message in real time.
+   * No other client on the server can see this private conversation!
+   * The Server (Terminal 1) logs each private routing with Thread IDs.
+
+
+### STEP 4: CONNECT CLIENT 3 - ANOTHER CUSTOMER (Terminal 4)
+   ./client 127.0.0.1 8080
+
+   1. Enter Name: Charlie
+   2. Choose Role: 1 (Customer / Client)
+   3. Notice that Charlie does NOT see Alice and Bob's private messages!
+   4. Charlie can chat privately with the Server or submit a support ticket:
+      > /request Billing invoice query
+
+
+### STEP 5: SERVER OPERATOR INTERACTION (Terminal 1)
+   The Server operator can directly interact with any client from the console:
+   - View all connected clients and their thread statuses:
+     > /clients
+   - Send a direct private message to Charlie (Client #3):
+     > /msg 3 Hello Charlie, support desk received your billing inquiry.
+   - Send a broadcast announcement to all connected clients:
+     > /broadcast System maintenance scheduled at midnight.
+
+
+### STEP 6: ENDING PRIVATE SESSION & DISCONNECTING
+   - Either Alice or Bob can close their private session:
+     > /close
+   - To disconnect any client gracefully:
+     > /exit
+
+---------------------------------------------------------------------
+3. COMMAND REFERENCE SUMMARY
+---------------------------------------------------------------------
+
+[Customer / Client Commands]
+  /request <issue>     : Submit a support request ticket to all agents
+  /server <message>    : Chat directly and privately with Server
+  /status              : View current status and active chat partner
+  /close               : End private chat session with current agent
+  /help                : Display customer commands
+  /exit                : Disconnect from server
+  <any text>           : Sent privately to paired support agent
+
+[Support Team Agent Commands]
+  /list                : Display all active clients & pending tickets
+  /accept <client_id>  : Start private 1-on-1 session with client
+  /close               : End private session with current client
+  /server <message>    : Message server operator
+  /help                : Display agent commands
+  /exit                : Disconnect from server
+  <any text>           : Sent privately to paired customer
+
+[Server Console Admin Commands]
+  /clients or /list    : Show table of all connected clients, roles & TIDs
+  /msg <id> <text>     : Send private direct message from Server to client
+  /broadcast <text>    : Broadcast message to all connected clients
+  /kick <id>           : Disconnect client by ID
+  /help                : Display server admin commands
+  /quit                : Gracefully shut down server
+=====================================================================
